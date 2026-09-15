@@ -1,18 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const { Sequelize, DataTypes } = require("sequelize");
-require("dotenv").config();
-
-const env = process.env.NODE_ENV || "development";
-const config = require("../config/config.js")[env];
-const logger = require("../utils/logger");
-
-const sequelize = new Sequelize(config.database, config.username, config.password, {
-  host: config.host,
-  port: config.port,
-  dialect: config.dialect,
-  logging: config.logging,
-});
+const { DataTypes } = require("sequelize");
+const { sequelize, Sequelize, testConnection } = require("../db");
 
 const db = {};
 
@@ -35,14 +24,6 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.testConnection = async () => {
-  try {
-    await sequelize.authenticate();
-    logger.info("MySQL database connected successfully (Sequelize)");
-  } catch (err) {
-    logger.error(`MySQL connection failed: ${err.message}`);
-    process.exit(1);
-  }
-};
+db.testConnection = testConnection;
 
 module.exports = db;

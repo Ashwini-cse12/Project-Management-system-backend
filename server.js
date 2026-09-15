@@ -1,6 +1,6 @@
 require("dotenv").config();
 const app = require("./app");
-const { testConnection } = require("./models");
+const { testConnection } = require("./db");
 const logger = require("./utils/logger");
 
 const PORT = process.env.PORT || 5000;
@@ -18,4 +18,7 @@ process.on("unhandledRejection", err => {
   console.error("Unhandled Rejection:", err);
 });
 
-start();
+start().catch((error) => {
+  logger.error(`Server failed to start: ${error.message}`);
+  process.exit(1);
+});
