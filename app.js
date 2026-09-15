@@ -14,12 +14,19 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const organizationRoutes = require("./routes/organizationRoutes");
 
 const app = express();
+
+
+// --- Security & core middleware ---
+app.use(helmet());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://project-management-system-front-git-main-team-vercel8.vercel.app"
+];
+
 app.use(cors({
   origin: (origin, callback) => {
-    if (
-      origin === "http://localhost:5173" ||
-      (origin && origin.endsWith(".vercel.app"))
-    ) {
+    console.log("Request origin:", origin);
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -28,14 +35,6 @@ app.use(cors({
   credentials: true
 }));
 
-// --- Security & core middleware ---
-app.use(helmet());
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-    credentials: true,
-  })
-);
 app.use(express.json({ limit: "4mb" }));
 app.use(morgan("combined", { stream: logger.stream }));
 
